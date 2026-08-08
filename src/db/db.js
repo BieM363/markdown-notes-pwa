@@ -1,9 +1,15 @@
+/**
+ * ProjectNotes PWA - Database & Storage Layer
+ * Developed & Authored by BieM363
+ * https://github.com/BieM363/markdown-notes-pwa
+ */
+
 import Dexie from 'dexie';
 
-export const db = new Dexie('ProjectNotesDB');
+export const db = new Dexie('ProjectNotesDB_BieM363');
 
 db.version(1).stores({
-  notes: '++id, title, content, folderId, *tags, isPinned, isFavorite, createdAt, updatedAt',
+  notes: '++id, title, content, folderId, *tags, isPinned, isFavorite, createdAt, updatedAt, author',
   folders: '++id, name, color, icon, createdAt',
   settings: 'key, value'
 });
@@ -16,19 +22,98 @@ export function getReadingTime(text = '') {
   return { words, minutes: minutes || 1 };
 }
 
-// Initial Sample Notes Data
+// Initial Sample Notes Data (Authored by BieM363)
 const SAMPLE_NOTES = [
+  {
+    title: 'PANDUAN_PENJELASAN_PROYEK_LARAVEL_VS_REACT_PWA.md',
+    folderId: 1,
+    tags: ['Panduan', 'Laravel', 'React', 'BieM363'],
+    isPinned: 1,
+    isFavorite: 1,
+    author: 'BieM363',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    content: `# 💡 Panduan Mudah Memahami Proyek React PWA untuk Pengembang Laravel (Gaya Bahasa Kelas 6 SD)
+
+> **Disusun & Ditulis Oleh**: **BieM363**  
+> **Tujuan**: Membantu memahami arsitektur React PWA ini dengan membandingkannya secara langsung pada konsep Laravel (Blade, Controller, Routes, MySQL, Artisan).
+
+---
+
+## 🏫 1. Perkenalan Sederhana: Apa Bedanya Laravel vs React PWA?
+
+Bayangkan kamu biasa membuat warung makan pakai **Laravel** (seperti proyek SIPANDU):
+- **Warung Laravel**: Setiap kali pembeli (pengguna) minta makanan, pelayan harus lari ke dapur belakang (Server PHP/MySQL) untuk mengambil mangkuk baru (Halaman Blade). Jika mati listrik/internet, warung **tutup total**.
+- **Warung React PWA (BieM363 App)**: Semua piring, mangkuk, dan bahan makanan **sudah dibawakan dan disimpan langsung di dalam tas pembeli (Browser HP/Desktop pengguna)**. Pembeli bisa makan kapan saja **100% tanpa internet**!
+
+---
+
+## 🗺️ 2. Kamus Padanan: Di Mana Komponen Laravel-mu Berada?
+
+| Konsep di Laravel (SIPANDU) | Di Mana Terletaknya di Proyek Ini? | Nama File / Komponen di Proyek |
+| :--- | :--- | :--- |
+| **Blade View** | **React JSX Components** | Sidebar.jsx, MarkdownReader.jsx, Header.jsx |
+| **Routes** | **State View Mode** | viewMode ('reader', 'editor', 'split') |
+| **Controller** | **Event Handler Functions** | handleSaveNote, handleNewNote, handleDeleteNote |
+| **Migration & Model** | **Dexie.js Schema** | src/db/db.js (db.notes, db.folders) |
+| **Database (MySQL)** | **Browser IndexedDB** | Database internal browser pengguna |
+| **PHP Artisan / Apache** | **Vite Dev Server + Service Worker** | vite.config.js & main.jsx |
+
+---
+
+## 🧩 3. Penjelasan Detail Setiap Komponen (Super Mudah)
+
+### A. Di mana letak HTML (Blade)? ➔ React Component (JSX)
+Di Laravel kamu menulis file header.blade.php atau sidebar.blade.php.  
+Di proyek ini, itu digantikan oleh komponen React di folder src/components/:
+- **Header.jsx**: Baris menu paling atas (tombol mode baca, cari, export).
+- **Sidebar.jsx**: Daftar menu di samping kiri (daftar catatan, folder, favorit).
+- **MarkdownReader.jsx**: Tempat menampilkan tulisan catatan yang rapi.
+- **MarkdownEditor.jsx**: Tempat mengetik catatan baru.
+
+### B. Di mana Controller & Function-nya? ➔ Event Handler di App.jsx
+Di Laravel kamu punya public function store() untuk menyimpan data.  
+Di proyek ini, fungsi tersebut berada di file **src/App.jsx**:
+- handleNewNote(): Fungsi untuk membuat catatan baru.
+- handleSaveNote(): Fungsi untuk menyimpan perubahan ke IndexedDB.
+- handleDeleteNote(): Fungsi untuk menghapus catatan.
+
+### C. Di mana Databasenya (MySQL)? ➔ Dexie.js (src/db/db.js)
+Di Laravel kamu memakai **MySQL** dan file Migration create_notes_table.php.  
+Di proyek ini, kita memakai **IndexedDB** lewat library **Dexie.js** di file src/db/db.js.
+
+### D. Mengapa Aplikasi Ini Bisa 100% Offline (PWA)?
+PWA (Progressive Web App) bekerja menggunakan **Service Worker**:
+- **Service Worker** seperti satpam pintar yang menaruh seluruh berkas kodingan (HTML, JS, CSS, Font) di dalam dompet browser.
+- Saat internet mati, satpam langsung menyajikan aplikasi dari dalam dompet browser. Hasilnya, web bisa dibuka penuh tanpa kuota!
+
+---
+
+## 🏷️ 4. Tanda Tangan & Watermark Proyek ("BieM363")
+
+Seluruh bagian arsitektur proyek ini (Frontend, DB Schema, dan Metadata) telah diberi tanda lisensi pengembang oleh **BieM363**:
+- **Frontend Header & Sidebar**: Menampilkan badge ProjectNotes PWA by BieM363.
+- **Database Schema**: Kolom author: 'BieM363' di IndexedDB.
+
+---
+
+> 🎯 **Kesimpulan Ringkas**:  
+> Di Laravel: **Browser ➔ Internet ➔ Server PHP ➔ Database MySQL ➔ Balik ke Browser**.  
+> Di React PWA BieM363: **Browser ➔ Langsung ke Memori Browser Internal (IndexedDB)**. Semuanya serba cepat, instant, dan 100% offline!
+`
+  },
   {
     title: 'Catatan_projek.md',
     folderId: 1,
-    tags: ['Dokumentasi', 'PWA', 'React', 'Dexie'],
+    tags: ['Dokumentasi', 'PWA', 'React', 'Dexie', 'BieM363'],
     isPinned: 1,
     isFavorite: 1,
+    author: 'BieM363',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     content: `# 📖 Dokumentasi & Catatan Projek: Offline-First PWA
 
-Selamat datang di **ProjectNotes PWA**! Aplikasi ini dirancang khusus untuk membaca dan mengelola catatan dokumentasi proyek \`.md\` secara **100% Offline** dengan performa tinggi.
+Selamat datang di **ProjectNotes PWA** yang dikembangkan oleh **BieM363**! Aplikasi ini dirancang khusus untuk membaca dan mengelola catatan dokumentasi proyek \`.md\` secara **100% Offline** dengan performa tinggi.
 
 ---
 
@@ -45,118 +130,16 @@ Selamat datang di **ProjectNotes PWA**! Aplikasi ini dirancang khusus untuk memb
 
 ## 📊 Perbandingan Arsitektur: Laravel vs React (PWA)
 
-Berikut adalah ringkasan perbandingan arsitektur untuk pengembangan aplikasi modern:
-
 | Kriteria | Laravel (Monolith / Blade) | React + Vite (PWA Offline) |
 | :--- | :--- | :--- |
 | **Penyimpanan Data** | Server Database (MySQL/PostgreSQL) | Browser Storage (IndexedDB / Dexie.js) |
 | **Dukungan Offline** | Terbatas / Perlu caching khusus | **100% Native Offline-First** |
 | **Kecepatan Rendering** | Server-Side Rendering (SSR) | Client-Side Rendering (CSR) Instant |
 | **Pengalaman Pengguna** | Page Reload / Inertia.js | SPA Instant State & Micro-animations |
-| **Deploy Target** | VPS / Shared Hosting / Cloud Run | Vercel / Netlify / GitHub Pages |
 
 ---
 
-## 💻 Contoh Kode Syntax Highlighting
-
-### Initializing Dexie Database (JavaScript)
-\`\`\`javascript
-import Dexie from 'dexie';
-
-export const db = new Dexie('ProjectNotesDB');
-
-db.version(1).stores({
-  notes: '++id, title, content, folderId, *tags, isPinned, isFavorite, createdAt, updatedAt',
-  folders: '++id, name, color, icon, createdAt'
-});
-
-// Melakukan query catatan secara offline
-export async function getPinnedNotes() {
-  return await db.notes.where('isPinned').equals(1).toArray();
-}
-\`\`\`
-
-### React Markdown Hook Usage
-\`\`\`jsx
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeHighlight from 'rehype-highlight';
-
-export function NoteViewer({ content }) {
-  return (
-    <article class="markdown-body">
-      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
-        {content}
-      </ReactMarkdown>
-    </article>
-  );
-}
-\`\`\`
-
----
-
-## 📝 Checklist Rencana Pengembangan
-
-- [x] Merancang skema database IndexedDB dengan Dexie.js
-- [x] Konfigurasi Vite PWA Service Worker & Workbox caching
-- [x] Parsing Markdown dengan syntax highlighting & copy code button
-- [x] Fitur Auto Table of Contents (TOC) & Search modal
-- [x] Pengaturan tema Dark, Light, & Sepia mode
-
----
-
-> 💡 **Tip Portofolio**: Aplikasi PWA ini membuktikan penguasaan teknik *progressive web app*, *service worker offline caching*, dan penyimpanan *IndexedDB* tanpa ketergantungan pada API backend external.
-`
-  },
-  {
-    title: 'PWA_Service_Worker_Guide.md',
-    folderId: 2,
-    tags: ['PWA', 'Workbox', 'Service Worker'],
-    isPinned: 0,
-    isFavorite: 1,
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    updatedAt: new Date(Date.now() - 86400000).toISOString(),
-    content: `# 🚀 Panduan Service Worker & Offline Caching Strategy
-
-Service Worker adalah script yang berjalan di background browser secara terpisah dari halaman web utama, memungkinkan fitur seperti offline access, push notifications, dan background sync.
-
-## 🛠️ Strategi Caching Workbox
-
-1. **Stale-While-Revalidate**: Menyajikan data dari cache terlebih dahulu untuk kecepatan instant, kemudian memperbarui cache di background jika online.
-2. **Cache First**: Mengambil asset static (gambar, font, css bundle) langsung dari cache tanpa menyentuh jaringan.
-3. **Network First**: Mencoba mengambil data terbaru dari jaringan terlebih dahulu, jika gagal (offline) maka menggunakan fallback cache.
-
-## 📦 Web App Manifest
-
-File \`manifest.webmanifest\` mendefinisikan bagaimana aplikasi PWA ditampilkan saat di-install di Desktop atau HP:
-
-\`\`\`json
-{
-  "name": "ProjectNotes - Offline Markdown Reader",
-  "short_name": "ProjectNotes",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#4f46e5"
-}
-\`\`\`
-`
-  },
-  {
-    title: 'React_Vite_Tailwind_Tips.md',
-    folderId: 3,
-    tags: ['React', 'Vite', 'Tailwind'],
-    isPinned: 0,
-    isFavorite: 0,
-    createdAt: new Date(Date.now() - 172800000).toISOString(),
-    updatedAt: new Date(Date.now() - 172800000).toISOString(),
-    content: `# ⚡ Tips Optimasi Performa React + Vite + Tailwind
-
-Beberapa praktik terbaik untuk memastikan aplikasi React berjalan sangat cepat dan responsif:
-
-- **Component-Driven Development**: Pecah UI menjadi komponen independen yang reusable.
-- **Tailwind CSS Utility Classes**: Gunakan sistem warna HSL dan konsisten pada dark mode.
-- **Dexie Live Query**: Gunakan hook \`useLiveQuery\` dari Dexie untuk update UI otomatis saat IndexedDB berubah tanpa re-render manual.
+> 💡 **Lisensi & Hak Cipta**: Proyek dikembangkan oleh **BieM363** (2026).
 `
   }
 ];
@@ -177,6 +160,7 @@ export async function seedInitialData() {
       await db.settings.put({ key: 'theme', value: 'dark' });
       await db.settings.put({ key: 'fontSize', value: 'base' });
       await db.settings.put({ key: 'fontFamily', value: 'sans' });
+      await db.settings.put({ key: 'developer', value: 'BieM363' });
     }
   } catch (err) {
     console.warn('Seeding Dexie data error:', err);

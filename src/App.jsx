@@ -10,15 +10,17 @@ import { SearchModal } from './components/SearchModal';
 import { ImportModal } from './components/ImportModal';
 import { ThemeSettingsModal } from './components/ThemeSettingsModal';
 import { PWAInstallBanner } from './components/PWAInstallBanner';
+import { Minimize2, BookOpen, Edit3, Search, X, ListTree } from 'lucide-react';
 
 export function App() {
   const [activeNoteId, setActiveNoteId] = useState(null);
   const [viewMode, setViewMode] = useState('reader'); // 'reader' | 'editor' | 'split'
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isZenMode, setIsZenMode] = useState(false);
+  const [isMobileTocOpen, setIsMobileTocOpen] = useState(false);
   const [activeHeadingId, setActiveHeadingId] = useState(null);
 
   // Settings state
@@ -60,6 +62,8 @@ export function App() {
         setIsSearchOpen(false);
         setIsImportOpen(false);
         setIsSettingsOpen(false);
+        setIsMobileTocOpen(false);
+        setIsZenMode(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -77,6 +81,7 @@ export function App() {
       tags: ['Baru'],
       isPinned: 0,
       isFavorite: 0,
+      author: 'BieM363',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
@@ -123,7 +128,8 @@ export function App() {
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>${activeNote.title}</title>
+  <meta name="author" content="BieM363">
+  <title>${activeNote.title} - BieM363 PWA</title>
   <style>
     body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #1e293b; }
     h1, h2, h3 { color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
@@ -149,6 +155,7 @@ export function App() {
   // Scroll smooth to Heading anchor in Reader
   const handleHeadingClick = (headingId) => {
     setActiveHeadingId(headingId);
+    setIsMobileTocOpen(false);
     const el = document.getElementById(headingId);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -157,6 +164,45 @@ export function App() {
 
   return (
     <div className={`h-screen w-screen flex flex-col overflow-hidden bg-slate-900 ${isZenMode ? 'zen-mode' : ''}`}>
+      {/* Floating Control Pill in Fullscreen (Zen Mode) */}
+      {isZenMode && (
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 p-1.5 bg-slate-950/90 border border-slate-800 rounded-2xl shadow-2xl backdrop-blur-md animate-slideDown">
+          <button
+            onClick={() => setViewMode('reader')}
+            className={`p-2 rounded-xl text-xs flex items-center gap-1 transition ${
+              viewMode === 'reader' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+            }`}
+            title="Mode Baca"
+          >
+            <BookOpen className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setViewMode('editor')}
+            className={`p-2 rounded-xl text-xs flex items-center gap-1 transition ${
+              viewMode === 'editor' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+            }`}
+            title="Mode Edit"
+          >
+            <Edit3 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setIsSearchOpen(true)}
+            className="p-2 text-slate-400 hover:text-white rounded-xl transition"
+            title="Cari"
+          >
+            <Search className="w-4 h-4 text-indigo-400" />
+          </button>
+          <button
+            onClick={() => setIsZenMode(false)}
+            className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold rounded-xl shadow transition flex items-center gap-1.5"
+            title="Keluar dari Fullscreen Mode (Kembali ke Toolbar)"
+          >
+            <Minimize2 className="w-4 h-4" />
+            <span>Kembali</span>
+          </button>
+        </div>
+      )}
+
       {/* PWA Offline & Install Alert Banner */}
       {!isZenMode && <PWAInstallBanner />}
 
@@ -175,6 +221,7 @@ export function App() {
           onExportHtml={handleExportHtml}
           isZenMode={isZenMode}
           onToggleZenMode={() => setIsZenMode(!isZenMode)}
+          onToggleMobileToc={() => setIsMobileTocOpen(true)}
         />
       )}
 
@@ -184,6 +231,7 @@ export function App() {
         {!isZenMode && (
           <Sidebar
             isOpen={isSidebarOpen}
+            onCloseSidebar={() => setIsSidebarOpen(false)}
             notes={notes}
             folders={folders}
             activeNoteId={activeNoteId}
@@ -238,7 +286,7 @@ export function App() {
           )}
         </main>
 
-        {/* Right Table of Contents Sidebar (Shown in Reader & Split mode if content exists) */}
+        {/* Desktop Table of Contents Sidebar */}
         {!isZenMode && viewMode !== 'editor' && activeNote?.content && (
           <aside className="hidden lg:block w-64 bg-slate-950/60 border-l border-slate-800/80 p-4 shrink-0 overflow-y-auto">
             <TableOfContents
@@ -249,6 +297,31 @@ export function App() {
           </aside>
         )}
       </div>
+
+      {/* Mobile Table of Contents Modal */}
+      {isMobileTocOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn">
+          <div className="bg-slate-900 border border-slate-800 rounded-t-2xl sm:rounded-2xl w-full max-w-md shadow-2xl p-4 overflow-hidden space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+                <ListTree className="w-4 h-4" />
+                <span>Daftar Isi (TOC)</span>
+              </div>
+              <button
+                onClick={() => setIsMobileTocOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-white rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <TableOfContents
+              markdownContent={activeNote?.content || ''}
+              activeHeadingId={activeHeadingId}
+              onHeadingClick={handleHeadingClick}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Modals */}
       <SearchModal
@@ -261,9 +334,7 @@ export function App() {
       <ImportModal
         isOpen={isImportOpen}
         onClose={() => setIsImportOpen(false)}
-        onImportSuccess={() => {
-          // Toast or refresh
-        }}
+        onImportSuccess={() => {}}
       />
 
       <ThemeSettingsModal
