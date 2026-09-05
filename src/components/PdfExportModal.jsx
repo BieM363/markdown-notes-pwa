@@ -103,7 +103,7 @@ export function PdfExportModal({ isOpen, onClose, note }) {
       </h3>
     ),
     p: ({ children, ...props }) => (
-      <p className="my-2.5 leading-relaxed text-stone-800 text-[13.5px] text-justify" {...props}>
+      <p className="my-2.5 leading-relaxed text-stone-800 text-[13.5px] text-left" {...props}>
         {children}
       </p>
     ),
@@ -113,14 +113,19 @@ export function PdfExportModal({ isOpen, onClose, note }) {
       </blockquote>
     ),
     ul: ({ children, ...props }) => (
-      <ul className="list-disc pl-5 my-2 space-y-1 text-stone-800 text-[13.5px]" {...props}>
+      <ul className="list-disc pl-6 my-2.5 space-y-1.5 text-stone-800 text-[13.5px] leading-relaxed text-left" {...props}>
         {children}
       </ul>
     ),
     ol: ({ children, ...props }) => (
-      <ol className="list-decimal pl-5 my-2 space-y-1 text-stone-800 text-[13.5px]" {...props}>
+      <ol className="list-decimal pl-6 my-2.5 space-y-1.5 text-stone-800 text-[13.5px] leading-relaxed text-left" {...props}>
         {children}
       </ol>
+    ),
+    li: ({ children, ...props }) => (
+      <li className="leading-relaxed pl-1 text-left" {...props}>
+        {children}
+      </li>
     ),
     code: ({ node, inline, className, children, ...props }) => {
       const match = /language-(\w+)/.exec(className || '');
@@ -138,7 +143,7 @@ export function PdfExportModal({ isOpen, onClose, note }) {
         );
       }
       return (
-        <code className="bg-stone-100 text-pink-700 px-1.5 py-0.5 rounded text-[12px] font-mono border border-stone-200" {...props}>
+        <code className="bg-stone-100 text-indigo-900 font-semibold px-1.5 py-0.5 rounded text-[12px] font-mono border border-stone-200 inline" {...props}>
           {children}
         </code>
       );
@@ -277,7 +282,7 @@ export function PdfExportModal({ isOpen, onClose, note }) {
           {/* Printable Book Sheet (A4 Proportion Canvas) */}
           <div 
             ref={printRef}
-            className={`book-print-container w-full max-w-[760px] bg-white text-stone-900 p-8 sm:p-12 shadow-2xl rounded-sm border border-stone-200 ${
+            className={`book-print-container w-full max-w-[760px] bg-white text-stone-900 p-6 sm:p-8 md:p-10 shadow-2xl rounded-sm border border-stone-200 ${
               bookFont === 'serif' ? 'font-serif' : 'font-sans'
             }`}
             style={{ minHeight: '842px' }}
@@ -285,54 +290,58 @@ export function PdfExportModal({ isOpen, onClose, note }) {
             {/* BOOK COVER / HEADER BANNER */}
             <header className="border-b-2 border-stone-800 pb-5 mb-6 book-break-avoid">
               <div className="flex items-center justify-between pb-3 mb-3 border-b border-stone-200">
-                {/* Brand Logo & Tag */}
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow">
-                    PN
+                {/* Brand Logo, Name & Edition Tag unified */}
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center text-white shadow">
+                    <FileText className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="font-sans font-black text-sm tracking-tight text-stone-900 uppercase">
-                      ProjectNotes <span className="text-indigo-600">PWA</span>
-                    </h4>
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-sans font-black text-sm tracking-tight text-stone-900 uppercase">
+                        ProjectNotes <span className="text-indigo-600">PWA</span>
+                      </h4>
+                      <span className="bg-indigo-50 text-indigo-700 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full border border-indigo-200">
+                        Edisi Dokumen Buku
+                      </span>
+                    </div>
                     <p className="font-sans text-[10px] text-stone-500 font-semibold tracking-wide">
                       Dokumentasi & Catatan oleh <strong className="text-indigo-700">BieM363</strong>
                     </p>
                   </div>
                 </div>
-
-                <div className="text-right font-sans">
-                  <span className="inline-block bg-indigo-50 text-indigo-700 text-[10px] font-semibold uppercase px-2.5 py-0.5 rounded-full border border-indigo-200">
-                    Edisi Dokumen Buku
-                  </span>
-                </div>
               </div>
 
               {/* Chapter / Book Title */}
-              <h1 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight leading-tight mt-2 mb-3">
+              <h1 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight leading-tight mt-3 mb-3">
                 {(note.title || 'Catatan').replace(/\.md$/, '')}
               </h1>
 
-              {/* Book Metadata Strip */}
-              <div className="flex flex-wrap items-center gap-y-1.5 gap-x-4 text-xs font-sans text-stone-600 pt-1">
-                <span className="flex items-center gap-1 font-medium">
-                  <FileText className="w-3.5 h-3.5 text-indigo-600" />
-                  {words} kata
-                </span>
-                <span className="flex items-center gap-1 font-medium">
-                  <Clock className="w-3.5 h-3.5 text-amber-600" />
-                  ~{minutes} menit baca
-                </span>
-                <span className="flex items-center gap-1 font-medium">
-                  <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-                  {formattedDate}
-                </span>
+              {/* Unified Book Metadata & Tags Bar */}
+              <div className="pt-2 font-sans space-y-2 border-t border-stone-100">
+                {/* Reading Stats & Date */}
+                <div className="flex flex-wrap items-center gap-2 text-xs text-stone-600">
+                  <span className="inline-flex items-center gap-1.5 font-medium bg-stone-100 px-2.5 py-1 rounded-md border border-stone-200/80">
+                    <FileText className="w-3.5 h-3.5 text-indigo-600" />
+                    {words} kata
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 font-medium bg-stone-100 px-2.5 py-1 rounded-md border border-stone-200/80">
+                    <Clock className="w-3.5 h-3.5 text-amber-600" />
+                    ~{minutes} menit baca
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 font-medium bg-stone-100 px-2.5 py-1 rounded-md border border-stone-200/80">
+                    <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+                    {formattedDate}
+                  </span>
+                </div>
 
+                {/* Tags placed cleanly beneath metadata */}
                 {note.tags && note.tags.length > 0 && (
-                  <div className="flex items-center gap-1 ml-auto">
+                  <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                    <span className="text-[11px] font-semibold text-stone-400 mr-1">Tag:</span>
                     {note.tags.map((tag, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-0.5 rounded text-[10px] font-semibold bg-stone-100 text-stone-700 border border-stone-300"
+                        className="px-2 py-0.5 rounded text-[11px] font-medium bg-stone-100 text-stone-700 border border-stone-200"
                       >
                         #{tag}
                       </span>
