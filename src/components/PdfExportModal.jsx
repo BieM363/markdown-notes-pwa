@@ -48,6 +48,80 @@ export function PdfExportModal({ isOpen, onClose, note }) {
       const element = printRef.current;
       const safeTitle = (note.title || 'Catatan').replace(/\.md$/, '').replace(/[^\w\s-]/g, '').trim();
 
+      // Deep clone element to inject layout-safe pagination keep-together guards
+      const clone = element.cloneNode(true);
+
+      // 1. Group headings with following sibling content to prevent orphan headings at page bottoms
+      const headings = Array.from(clone.querySelectorAll('h1, h2, h3, h4'));
+      headings.forEach((heading) => {
+        if (heading.parentElement && heading.parentElement.classList.contains('book-heading-group')) {
+          return;
+        }
+        const nextEl = heading.nextElementSibling;
+        if (nextEl) {
+          const group = document.createElement('div');
+          group.className = 'book-heading-group book-break-avoid';
+          group.style.pageBreakInside = 'avoid';
+          group.style.breakInside = 'avoid';
+
+          heading.parentNode.insertBefore(group, heading);
+          group.appendChild(heading);
+          group.appendChild(nextEl);
+
+          // If nextEl is also a heading (e.g. h1 followed by h3 subtitle), also include the following content
+          if (/^H[1-6]$/i.test(nextEl.tagName) && group.nextElementSibling) {
+            group.appendChild(group.nextElementSibling);
+          }
+        }
+      });
+
+      // 2. Protect table rows and cells from mid-row cuts
+      const tables = Array.from(clone.querySelectorAll('table'));
+      tables.forEach((table) => {
+        table.style.pageBreakInside = 'auto';
+        table.style.breakInside = 'auto';
+        table.style.borderCollapse = 'collapse';
+      });
+
+      const rows = Array.from(clone.querySelectorAll('tr'));
+      rows.forEach((tr) => {
+        tr.classList.add('book-break-avoid');
+        tr.style.pageBreakInside = 'avoid';
+        tr.style.breakInside = 'avoid';
+      });
+
+      const cells = Array.from(clone.querySelectorAll('th, td'));
+      cells.forEach((cell) => {
+        cell.classList.add('book-break-avoid');
+        cell.style.pageBreakInside = 'avoid';
+        cell.style.breakInside = 'avoid';
+      });
+
+      // 3. Protect preformatted code blocks from horizontal slicing
+      const pres = Array.from(clone.querySelectorAll('pre'));
+      pres.forEach((pre) => {
+        pre.classList.add('book-break-avoid');
+        pre.style.pageBreakInside = 'avoid';
+        pre.style.breakInside = 'avoid';
+        pre.style.whiteSpace = 'pre-wrap';
+        pre.style.wordBreak = 'break-word';
+      });
+
+      // 4. Protect list items, paragraphs, and blockquotes from mid-line cuts
+      const listItems = Array.from(clone.querySelectorAll('li'));
+      listItems.forEach((li) => {
+        li.classList.add('book-break-avoid');
+        li.style.pageBreakInside = 'avoid';
+        li.style.breakInside = 'avoid';
+      });
+
+      const paragraphs = Array.from(clone.querySelectorAll('p'));
+      paragraphs.forEach((p) => {
+        p.classList.add('book-break-avoid');
+        p.style.pageBreakInside = 'avoid';
+        p.style.breakInside = 'avoid';
+      });
+
       const opt = {
         margin: [8, 8, 10, 8],
         filename: `${safeTitle || 'Catatan'}_Edisi_Buku.pdf`,
@@ -63,11 +137,27 @@ export function PdfExportModal({ isOpen, onClose, note }) {
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { 
-          mode: ['css', 'legacy']
+          mode: ['css', 'legacy'],
+          avoid: [
+            'tr',
+            'thead',
+            'th',
+            'td',
+            'pre',
+            'blockquote',
+            'li',
+            'p',
+            'h1',
+            'h2',
+            'h3',
+            'h4',
+            '.book-break-avoid',
+            '.book-heading-group'
+          ]
         }
       };
 
-      await html2pdf().set(opt).from(element).save();
+      await html2pdf().set(opt).from(clone).save();
       setDownloadSuccess(true);
       setTimeout(() => setDownloadSuccess(false), 3000);
     } catch (err) {
@@ -88,30 +178,30 @@ export function PdfExportModal({ isOpen, onClose, note }) {
     ? new Date(note.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
     : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
-  // Custom markdown renderer for clean book aesthetic
+  // Custom markdown renderer for clean book aesthetic with pagebreak protection
   const markdownComponents = {
     h1: ({ children, ...props }) => (
-      <h1 className="text-2xl font-bold border-b border-stone-300 pb-2 mt-5 mb-2.5 text-stone-900" style={{ pageBreakAfter: 'avoid', breakAfter: 'avoid' }} {...props}>
+      <h1 className="text-2xl font-bold border-b border-stone-300 pb-2 mt-5 mb-2.5 text-stone-900 book-break-avoid" style={{ pageBreakAfter: 'avoid', breakAfter: 'avoid', pageBreakInside: 'avoid', breakInside: 'avoid' }} {...props}>
         {children}
       </h1>
     ),
     h2: ({ children, ...props }) => (
-      <h2 className="text-xl font-bold border-b border-stone-200 pb-1.5 mt-4 mb-2 text-stone-800" style={{ pageBreakAfter: 'avoid', breakAfter: 'avoid' }} {...props}>
+      <h2 className="text-xl font-bold border-b border-stone-200 pb-1.5 mt-4 mb-2 text-stone-800 book-break-avoid" style={{ pageBreakAfter: 'avoid', breakAfter: 'avoid', pageBreakInside: 'avoid', breakInside: 'avoid' }} {...props}>
         {children}
       </h2>
     ),
     h3: ({ children, ...props }) => (
-      <h3 className="text-lg font-semibold mt-3.5 mb-1.5 text-stone-800" style={{ pageBreakAfter: 'avoid', breakAfter: 'avoid' }} {...props}>
+      <h3 className="text-lg font-semibold mt-3.5 mb-1.5 text-stone-800 book-break-avoid" style={{ pageBreakAfter: 'avoid', breakAfter: 'avoid', pageBreakInside: 'avoid', breakInside: 'avoid' }} {...props}>
         {children}
       </h3>
     ),
     p: ({ children, ...props }) => (
-      <p className="my-2 leading-relaxed text-stone-800 text-[13.5px] text-left" {...props}>
+      <p className="my-2 leading-relaxed text-stone-800 text-[13.5px] text-left book-break-avoid" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }} {...props}>
         {children}
       </p>
     ),
     blockquote: ({ children, ...props }) => (
-      <blockquote className="my-2.5 pl-4 py-1.5 border-l-4 border-indigo-600 bg-stone-100 text-stone-700 italic rounded-r-md text-[13px]" {...props}>
+      <blockquote className="my-2.5 pl-4 py-1.5 border-l-4 border-indigo-600 bg-stone-100 text-stone-700 italic rounded-r-md text-[13px] book-break-avoid" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }} {...props}>
         {children}
       </blockquote>
     ),
@@ -126,20 +216,25 @@ export function PdfExportModal({ isOpen, onClose, note }) {
       </ol>
     ),
     li: ({ children, ...props }) => (
-      <li className="leading-relaxed text-left" {...props}>
+      <li className="leading-relaxed text-left book-break-avoid" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }} {...props}>
         <div className="flex-1">{children}</div>
       </li>
+    ),
+    pre: ({ children, ...props }) => (
+      <pre className="my-3 p-3 bg-stone-100 border border-stone-300 rounded-lg text-[12px] font-mono leading-relaxed text-stone-800 book-break-avoid" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }} {...props}>
+        {children}
+      </pre>
     ),
     code: ({ node, inline, className, children, ...props }) => {
       const match = /language-(\w+)/.exec(className || '');
       if (match) {
         return (
-          <div className="my-3 rounded-lg overflow-hidden border border-stone-300 bg-stone-900 text-stone-100 book-break-avoid">
+          <div className="my-3 rounded-lg overflow-hidden border border-stone-300 bg-stone-900 text-stone-100 book-break-avoid" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
             <div className="px-3 py-1 bg-stone-800 text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-300 border-b border-stone-700 flex items-center justify-between">
               <span>{match[1]}</span>
               <span className="text-stone-400 font-normal">ProjectNotes Code</span>
             </div>
-            <pre className="p-3 text-[12px] font-mono leading-relaxed overflow-x-auto text-stone-100">
+            <pre className="p-3 text-[12px] font-mono leading-relaxed text-stone-100" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
               <code>{children}</code>
             </pre>
           </div>
@@ -152,24 +247,39 @@ export function PdfExportModal({ isOpen, onClose, note }) {
       );
     },
     table: ({ children, ...props }) => (
-      <div className="my-4 overflow-x-auto book-break-avoid">
-        <table className="w-full text-left border-collapse text-[12.5px] border border-stone-300" {...props}>
+      <div className="my-4 book-table-container">
+        <table className="w-full text-left border-collapse text-[12.5px] border border-stone-300" style={{ pageBreakInside: 'auto', breakInside: 'auto' }} {...props}>
           {children}
         </table>
       </div>
     ),
+    thead: ({ children, ...props }) => (
+      <thead className="book-break-avoid" style={{ display: 'table-header-group', pageBreakInside: 'avoid', breakInside: 'avoid' }} {...props}>
+        {children}
+      </thead>
+    ),
+    tbody: ({ children, ...props }) => (
+      <tbody style={{ display: 'table-row-group', pageBreakInside: 'auto', breakInside: 'auto' }} {...props}>
+        {children}
+      </tbody>
+    ),
+    tr: ({ children, ...props }) => (
+      <tr className="book-break-avoid" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }} {...props}>
+        {children}
+      </tr>
+    ),
     th: ({ children, ...props }) => (
-      <th className="bg-stone-100 border border-stone-300 px-3 py-2 font-bold text-stone-800 text-[12px]" {...props}>
+      <th className="bg-stone-100 border border-stone-300 px-3 py-2 font-bold text-stone-800 text-[12px] book-break-avoid" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }} {...props}>
         {children}
       </th>
     ),
     td: ({ children, ...props }) => (
-      <td className="border border-stone-300 px-3 py-2 text-stone-700" {...props}>
+      <td className="border border-stone-300 px-3 py-2 text-stone-700 book-break-avoid" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }} {...props}>
         {children}
       </td>
     ),
     hr: () => (
-      <div className="my-6 flex items-center justify-center gap-2 text-stone-300">
+      <div className="my-6 flex items-center justify-center gap-2 text-stone-300 book-break-avoid" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
         <div className="h-[1px] bg-stone-300 flex-1" />
         <span className="text-xs text-stone-400 font-serif">✦ ✦ ✦</span>
         <div className="h-[1px] bg-stone-300 flex-1" />
