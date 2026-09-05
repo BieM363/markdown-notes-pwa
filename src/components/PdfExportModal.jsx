@@ -52,7 +52,14 @@ export function PdfExportModal({ isOpen, onClose, note }) {
         margin: [12, 12, 14, 12],
         filename: `${safeTitle || 'Catatan'}_Edisi_Buku.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, letterRendering: true, logging: false },
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true, 
+          letterRendering: true, 
+          logging: false,
+          scrollY: 0,
+          scrollX: 0
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
@@ -337,23 +344,30 @@ export function PdfExportModal({ isOpen, onClose, note }) {
 
             {/* TABLE OF CONTENTS (Daftar Isi Buku) */}
             {includeToc && headings.length > 0 && (
-              <section className="my-6 p-4 bg-stone-50 border border-stone-200 rounded-lg book-break-avoid">
-                <h3 className="font-sans font-bold text-xs uppercase tracking-wider text-stone-700 mb-2.5 pb-1 border-b border-stone-200 flex items-center gap-1.5">
-                  <Layout className="w-3.5 h-3.5 text-indigo-600" />
-                  Daftar Isi Catatan
-                </h3>
-                <div className="space-y-1.5 text-xs">
+              <section 
+                className="my-6 p-5 bg-stone-50 border border-stone-200 rounded-xl book-break-avoid"
+                style={{ overflow: 'visible' }}
+              >
+                <div className="font-sans font-bold text-xs uppercase tracking-wider text-stone-700 mb-3 pb-2 border-b border-stone-200 flex items-center gap-2">
+                  <Layout className="w-4 h-4 text-indigo-600" />
+                  <span>Daftar Isi Catatan</span>
+                </div>
+                <div className="space-y-2" style={{ overflow: 'visible' }}>
                   {headings.map((h, i) => (
                     <div 
                       key={i} 
-                      className={`flex items-baseline justify-between ${
-                        h.level === 1 ? 'font-semibold text-stone-800' :
-                        h.level === 2 ? 'pl-3 font-normal text-stone-700' : 'pl-6 text-stone-600 text-[11px]'
+                      className={`flex items-center justify-between gap-3 py-1 ${
+                        h.level === 1 ? 'font-bold text-stone-900 text-[13px] border-b border-stone-200/50 pb-1.5' :
+                        h.level === 2 ? 'pl-4 font-semibold text-stone-800 text-[12px]' : 
+                        'pl-7 font-normal text-stone-600 text-[11.5px]'
                       }`}
+                      style={{ overflow: 'visible', lineHeight: 1.6 }}
                     >
-                      <span className="truncate pr-2">{h.text}</span>
-                      <span className="text-stone-400 font-mono text-[10px] shrink-0">
-                        {h.level === 1 ? '• Bagian' : '–'}
+                      <span className="flex-1" style={{ overflow: 'visible' }}>
+                        {h.text}
+                      </span>
+                      <span className="text-stone-400 font-mono text-[10px] shrink-0 font-medium">
+                        {h.level === 1 ? `Bagian ${i + 1}` : '–'}
                       </span>
                     </div>
                   ))}
