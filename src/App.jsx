@@ -9,6 +9,7 @@ import { TableOfContents } from './components/TableOfContents';
 import { SearchModal } from './components/SearchModal';
 import { ImportModal } from './components/ImportModal';
 import { ThemeSettingsModal } from './components/ThemeSettingsModal';
+import { PdfExportModal } from './components/PdfExportModal';
 import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { Minimize2, BookOpen, Edit3, Search, X, ListTree } from 'lucide-react';
 
@@ -19,14 +20,15 @@ export function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isPdfExportOpen, setIsPdfExportOpen] = useState(false);
   const [isZenMode, setIsZenMode] = useState(false);
   const [isMobileTocOpen, setIsMobileTocOpen] = useState(false);
   const [activeHeadingId, setActiveHeadingId] = useState(null);
 
-  // Settings state
-  const [theme, setTheme] = useState('dark');
-  const [fontSize, setFontSize] = useState('base');
-  const [fontFamily, setFontFamily] = useState('sans');
+  // Settings state persisted to localStorage
+  const [theme, setTheme] = useState(() => localStorage.getItem('app_theme') || 'dark');
+  const [fontSize, setFontSize] = useState(() => localStorage.getItem('app_font_size') || 'base');
+  const [fontFamily, setFontFamily] = useState(() => localStorage.getItem('app_font_family') || 'sans');
 
   // Fetch Dexie Live Queries
   const notes = useLiveQuery(() => db.notes.orderBy('updatedAt').reverse().toArray(), []) || [];
@@ -44,12 +46,22 @@ export function App() {
     }
   }, [notes, activeNoteId]);
 
-  // Apply theme class to <html> root element
+  // Apply theme class to <html> root element & persist
   useEffect(() => {
+    localStorage.setItem('app_theme', theme);
     const root = document.documentElement;
     root.classList.remove('dark', 'light', 'sepia');
     root.classList.add(theme);
   }, [theme]);
+
+  // Persist font size & family
+  useEffect(() => {
+    localStorage.setItem('app_font_size', fontSize);
+  }, [fontSize]);
+
+  useEffect(() => {
+    localStorage.setItem('app_font_family', fontFamily);
+  }, [fontFamily]);
 
   // Keyboard shortcut listener (Ctrl+K, Esc)
   useEffect(() => {
@@ -62,6 +74,7 @@ export function App() {
         setIsSearchOpen(false);
         setIsImportOpen(false);
         setIsSettingsOpen(false);
+        setIsPdfExportOpen(false);
         setIsMobileTocOpen(false);
         setIsZenMode(false);
       }
@@ -122,32 +135,113 @@ export function App() {
     URL.revokeObjectURL(url);
   };
 
+  // Aesthetic Book-styled HTML export
   const handleExportHtml = () => {
     if (!activeNote) return;
+    const safeTitle = (activeNote.title || 'Catatan').replace(/\.md$/, '');
+    const dateStr = activeNote.updatedAt ? new Date(activeNote.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+    
     const htmlContent = `<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="author" content="BieM363">
-  <title>${activeNote.title} - BieM363 PWA</title>
+  <title>${safeTitle} - ProjectNotes PWA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Fira+Code&display=swap" rel="stylesheet">
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #1e293b; }
-    h1, h2, h3 { color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
-    pre { background: #0f172a; color: #f8fafc; padding: 16px; border-radius: 8px; overflow-x: auto; }
-    code { background: #f1f5f9; color: #db2777; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-    blockquote { border-left: 4px solid #6366f1; margin: 0; padding-left: 16px; font-style: italic; color: #475569; }
+    :root {
+      --bg: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --accent: #4f46e5;
+    }
+    body {
+      font-family: 'Merriweather', Georgia, serif;
+      line-height: 1.8;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 24px;
+      color: var(--text);
+      background-color: var(--bg);
+    }
+    .book-header {
+      border-bottom: 2px solid #1f2937;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+      font-family: 'Inter', sans-serif;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .author-tag {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: #111827;
+      margin: 16px 0 10px 0;
+      line-height: 1.3;
+    }
+    .meta {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      gap: 12px;
+    }
+    .content {
+      font-size: 15px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .book-footer {
+      margin-top: 50px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border);
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
   </style>
 </head>
 <body>
-  <h1>${activeNote.title}</h1>
-  <pre>${activeNote.content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+  <header class="book-header">
+    <div class="brand">
+      <span>✦ ProjectNotes PWA</span>
+      <span class="author-tag">• Dokumentasi oleh BieM363</span>
+    </div>
+    <h1>${safeTitle}</h1>
+    <div class="meta">
+      <span>Diperbarui: ${dateStr}</span>
+      ${activeNote.tags?.length ? `<span>Tag: ${activeNote.tags.join(', ')}</span>` : ''}
+    </div>
+  </header>
+  <main class="content">${activeNote.content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</main>
+  <footer class="book-footer">
+    <span>ProjectNotes PWA • Dokumen Catatan</span>
+    <span>Dibuat oleh BieM363</span>
+  </footer>
 </body>
 </html>`;
     const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${activeNote.title.replace(/\.md$/, '')}.html`;
+    link.download = `${safeTitle}.html`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -163,14 +257,14 @@ export function App() {
   };
 
   return (
-    <div className={`h-screen w-screen flex flex-col overflow-hidden bg-slate-900 ${isZenMode ? 'zen-mode' : ''}`}>
+    <div className={`h-screen w-screen flex flex-col overflow-hidden bg-theme-app text-theme-text transition-colors duration-200 ${isZenMode ? 'zen-mode' : ''}`}>
       {/* Floating Control Pill in Fullscreen (Zen Mode) */}
       {isZenMode && (
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 p-1.5 bg-slate-950/90 border border-slate-800 rounded-2xl shadow-2xl backdrop-blur-md animate-slideDown">
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 p-1.5 bg-theme-card border border-theme-border rounded-2xl shadow-2xl backdrop-blur-md animate-slideDown">
           <button
             onClick={() => setViewMode('reader')}
             className={`p-2 rounded-xl text-xs flex items-center gap-1 transition ${
-              viewMode === 'reader' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+              viewMode === 'reader' ? 'bg-indigo-600 text-white' : 'text-theme-muted hover:text-theme-text'
             }`}
             title="Mode Baca"
           >
@@ -179,7 +273,7 @@ export function App() {
           <button
             onClick={() => setViewMode('editor')}
             className={`p-2 rounded-xl text-xs flex items-center gap-1 transition ${
-              viewMode === 'editor' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+              viewMode === 'editor' ? 'bg-indigo-600 text-white' : 'text-theme-muted hover:text-theme-text'
             }`}
             title="Mode Edit"
           >
@@ -187,10 +281,10 @@ export function App() {
           </button>
           <button
             onClick={() => setIsSearchOpen(true)}
-            className="p-2 text-slate-400 hover:text-white rounded-xl transition"
+            className="p-2 text-theme-muted hover:text-theme-text rounded-xl transition"
             title="Cari"
           >
-            <Search className="w-4 h-4 text-indigo-400" />
+            <Search className="w-4 h-4 text-indigo-500" />
           </button>
           <button
             onClick={() => setIsZenMode(false)}
@@ -216,6 +310,7 @@ export function App() {
           onOpenSearch={() => setIsSearchOpen(true)}
           onOpenImport={() => setIsImportOpen(true)}
           onOpenSettings={() => setIsSettingsOpen(true)}
+          onOpenPdfExport={() => setIsPdfExportOpen(true)}
           onNewNote={handleNewNote}
           onExportMd={handleExportMd}
           onExportHtml={handleExportHtml}
@@ -249,12 +344,13 @@ export function App() {
         )}
 
         {/* Reader / Editor Center Panel */}
-        <main className="flex-1 flex overflow-hidden">
+        <main className="flex-1 flex overflow-hidden bg-theme-main">
           {viewMode === 'reader' && (
             <MarkdownReader
               note={activeNote}
               fontSize={fontSize}
               fontFamily={fontFamily}
+              onOpenPdfExport={() => setIsPdfExportOpen(true)}
             />
           )}
 
@@ -267,7 +363,7 @@ export function App() {
           )}
 
           {viewMode === 'split' && (
-            <div className="flex-1 flex overflow-hidden divide-x divide-slate-800">
+            <div className="flex-1 flex overflow-hidden divide-x divide-theme-border">
               <div className="w-1/2 flex">
                 <MarkdownEditor
                   note={activeNote}
@@ -280,6 +376,7 @@ export function App() {
                   note={activeNote}
                   fontSize={fontSize}
                   fontFamily={fontFamily}
+                  onOpenPdfExport={() => setIsPdfExportOpen(true)}
                 />
               </div>
             </div>
@@ -288,7 +385,7 @@ export function App() {
 
         {/* Desktop Table of Contents Sidebar */}
         {!isZenMode && viewMode !== 'editor' && activeNote?.content && (
-          <aside className="hidden lg:block w-64 bg-slate-950/60 border-l border-slate-800/80 p-4 shrink-0 overflow-y-auto">
+          <aside className="hidden lg:block w-64 bg-theme-subtle/50 border-l border-theme-border p-4 shrink-0 overflow-y-auto">
             <TableOfContents
               markdownContent={activeNote.content}
               activeHeadingId={activeHeadingId}
@@ -301,15 +398,15 @@ export function App() {
       {/* Mobile Table of Contents Modal */}
       {isMobileTocOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn">
-          <div className="bg-slate-900 border border-slate-800 rounded-t-2xl sm:rounded-2xl w-full max-w-md shadow-2xl p-4 overflow-hidden space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+          <div className="bg-theme-card border border-theme-border rounded-t-2xl sm:rounded-2xl w-full max-w-md shadow-2xl p-4 overflow-hidden space-y-3">
+            <div className="flex items-center justify-between border-b border-theme-border pb-2">
+              <div className="flex items-center gap-2 text-indigo-500 font-bold text-sm">
                 <ListTree className="w-4 h-4" />
                 <span>Daftar Isi (TOC)</span>
               </div>
               <button
                 onClick={() => setIsMobileTocOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg"
+                className="p-1.5 text-theme-muted hover:text-theme-text rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -346,6 +443,12 @@ export function App() {
         setFontSize={setFontSize}
         fontFamily={fontFamily}
         setFontFamily={setFontFamily}
+      />
+
+      <PdfExportModal
+        isOpen={isPdfExportOpen}
+        onClose={() => setIsPdfExportOpen(false)}
+        note={activeNote}
       />
     </div>
   );

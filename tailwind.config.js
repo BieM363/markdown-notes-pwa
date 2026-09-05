@@ -8,6 +8,20 @@ export default {
   theme: {
     extend: {
       colors: {
+        theme: {
+          main: 'var(--bg-main)',
+          card: 'var(--bg-card)',
+          surface: 'var(--bg-surface)',
+          subtle: 'var(--bg-subtle)',
+          input: 'var(--bg-input)',
+          text: 'var(--text-primary)',
+          muted: 'var(--text-secondary)',
+          submuted: 'var(--text-muted)',
+          border: 'var(--border-color)',
+          'border-subtle': 'var(--border-subtle)',
+          accent: 'var(--accent)',
+          'accent-hover': 'var(--accent-hover)',
+        },
         sepia: {
           50: '#fbf0d9',
           100: '#f7e7c4',

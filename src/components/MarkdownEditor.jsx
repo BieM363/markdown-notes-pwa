@@ -56,55 +56,55 @@ export function MarkdownEditor({ note, folders = [], onSave }) {
   const { words } = getReadingTime(content);
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-slate-900 overflow-hidden">
+    <div className="flex-1 flex flex-col h-full bg-theme-main overflow-hidden transition-colors duration-200">
       {/* Editor Top Toolbar */}
-      <div className="px-4 py-3 bg-slate-900/80 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
+      <div className="px-4 py-3 bg-theme-main border-b border-theme-border flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-1 bg-theme-subtle p-1 rounded-lg border border-theme-border">
           <button
             onClick={() => insertSnippet('**', '**')}
-            className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded"
+            className="p-1.5 hover:bg-theme-surface text-theme-muted hover:text-theme-text rounded transition"
             title="Tebal (Bold)"
           >
             <Bold className="w-4 h-4" />
           </button>
           <button
             onClick={() => insertSnippet('*', '*')}
-            className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded"
+            className="p-1.5 hover:bg-theme-surface text-theme-muted hover:text-theme-text rounded transition"
             title="Miring (Italic)"
           >
             <Italic className="w-4 h-4" />
           </button>
           <button
             onClick={() => insertSnippet('## ')}
-            className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded"
+            className="p-1.5 hover:bg-theme-surface text-theme-muted hover:text-theme-text rounded transition"
             title="Heading 2"
           >
             <Heading className="w-4 h-4" />
           </button>
           <button
             onClick={() => insertSnippet('```javascript\n', '\n```')}
-            className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded"
+            className="p-1.5 hover:bg-theme-surface text-theme-muted hover:text-theme-text rounded transition"
             title="Blok Kode"
           >
             <Code className="w-4 h-4" />
           </button>
           <button
             onClick={() => insertSnippet('> ')}
-            className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded"
+            className="p-1.5 hover:bg-theme-surface text-theme-muted hover:text-theme-text rounded transition"
             title="Kutipan (Quote)"
           >
             <Quote className="w-4 h-4" />
           </button>
           <button
             onClick={() => insertSnippet('- ')}
-            className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded"
+            className="p-1.5 hover:bg-theme-surface text-theme-muted hover:text-theme-text rounded transition"
             title="Daftar List"
           >
             <List className="w-4 h-4" />
           </button>
           <button
             onClick={() => insertSnippet('- [ ] ')}
-            className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded"
+            className="p-1.5 hover:bg-theme-surface text-theme-muted hover:text-theme-text rounded transition"
             title="Checklist"
           >
             <CheckSquare className="w-4 h-4" />
@@ -112,7 +112,7 @@ export function MarkdownEditor({ note, folders = [], onSave }) {
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-400 hidden sm:inline">
+          <span className="text-xs text-theme-muted hidden sm:inline">
             {words} kata • {content.length} karakter
           </span>
           <button
@@ -126,37 +126,37 @@ export function MarkdownEditor({ note, folders = [], onSave }) {
       </div>
 
       {/* Editor Inputs */}
-      <div className="p-4 md:p-6 space-y-4 border-b border-slate-800 bg-slate-950/40">
+      <div className="p-4 md:p-6 space-y-4 border-b border-theme-border bg-theme-subtle/50">
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Judul Catatan (contoh: Catatan_projek.md)..."
-          className="w-full text-xl md:text-2xl font-bold bg-transparent text-white border-b border-slate-800 focus:border-indigo-500 outline-none pb-2 transition"
+          className="w-full text-xl md:text-2xl font-bold bg-transparent text-theme-text border-b border-theme-border focus:border-indigo-500 outline-none pb-2 transition"
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <div className="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
-            <Tag className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+          <div className="flex items-center gap-2 bg-theme-card px-3 py-1.5 rounded-lg border border-theme-border">
+            <Tag className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
             <input
               type="text"
               value={tagsInput}
               onChange={(e) => setTagsInput(e.target.value)}
               placeholder="Tag (pisahkan koma: PWA, React, Tip)"
-              className="bg-transparent text-slate-200 outline-none w-full"
+              className="bg-transparent text-theme-text outline-none w-full"
             />
           </div>
 
-          <div className="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
-            <Folder className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+          <div className="flex items-center gap-2 bg-theme-card px-3 py-1.5 rounded-lg border border-theme-border">
+            <Folder className="w-3.5 h-3.5 text-amber-500 shrink-0" />
             <select
               value={folderId}
               onChange={(e) => setFolderId(e.target.value)}
-              className="bg-transparent text-slate-200 outline-none w-full cursor-pointer"
+              className="bg-transparent text-theme-text outline-none w-full cursor-pointer"
             >
-              <option value="" className="bg-slate-900 text-slate-300">Pilih Folder (Opsional)</option>
+              <option value="" className="bg-theme-card text-theme-text">Pilih Folder (Opsional)</option>
               {folders.map(f => (
-                <option key={f.id} value={f.id} className="bg-slate-900 text-slate-300">
+                <option key={f.id} value={f.id} className="bg-theme-card text-theme-text">
                   📁 {f.name}
                 </option>
               ))}
@@ -172,7 +172,7 @@ export function MarkdownEditor({ note, folders = [], onSave }) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Tulis konten Markdown di sini... (# Heading, **teks tebal**, ```kode```)"
-          className="w-full h-full bg-transparent text-slate-200 font-mono text-sm leading-relaxed outline-none resize-none custom-scrollbar"
+          className="w-full h-full bg-transparent text-theme-text font-mono text-sm leading-relaxed outline-none resize-none custom-scrollbar"
         />
       </div>
     </div>

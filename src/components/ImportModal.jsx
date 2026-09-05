@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { UploadCloud, FileText, CheckCircle, X, AlertCircle } from 'lucide-react';
+import { UploadCloud, FileText, CheckCircle, X } from 'lucide-react';
 import { db } from '../db/db';
 
 export function ImportModal({ isOpen, onClose, onImportSuccess }) {
@@ -86,21 +86,21 @@ export function ImportModal({ isOpen, onClose, onImportSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-theme-card border border-theme-border rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-colors duration-200">
         {/* Header */}
-        <div className="p-4 md:p-5 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-indigo-600/20 text-indigo-400 rounded-xl">
+        <div className="p-4 md:p-5 border-b border-theme-border flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 bg-indigo-600/15 text-indigo-500 rounded-xl">
               <UploadCloud className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-white text-base">Import File Markdown (.md)</h3>
-              <p className="text-xs text-slate-400">Unggah file .md lokal untuk disimpan di IndexedDB browser</p>
+              <h3 className="font-bold text-theme-text text-base">Import File Markdown (.md)</h3>
+              <p className="text-xs text-theme-muted">Unggah file .md lokal untuk disimpan di IndexedDB browser</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+            className="p-1.5 text-theme-muted hover:text-theme-text rounded-lg hover:bg-theme-surface transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -117,7 +117,7 @@ export function ImportModal({ isOpen, onClose, onImportSuccess }) {
             className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3 ${
               dragActive
                 ? 'border-indigo-500 bg-indigo-500/10'
-                : 'border-slate-700/70 bg-slate-950/40 hover:border-slate-600 hover:bg-slate-950/70'
+                : 'border-theme-border bg-theme-subtle/50 hover:border-indigo-400 hover:bg-theme-surface'
             }`}
           >
             <input
@@ -129,38 +129,38 @@ export function ImportModal({ isOpen, onClose, onImportSuccess }) {
               onChange={(e) => handleFiles(e.target.files)}
             />
 
-            <UploadCloud className="w-10 h-10 text-indigo-400 animate-bounce" />
+            <UploadCloud className="w-10 h-10 text-indigo-500 animate-bounce" />
             <div>
-              <p className="text-sm font-semibold text-white">
-                Tarik & Lepas file <span className="text-indigo-400">.md</span> di sini
+              <p className="text-sm font-semibold text-theme-text">
+                Tarik & Lepas file <span className="text-indigo-500">.md</span> di sini
               </p>
-              <p className="text-xs text-slate-400 mt-1">atau klik untuk memilih file dari komputer Anda</p>
+              <p className="text-xs text-theme-muted mt-1">atau klik untuk memilih file dari komputer Anda</p>
             </div>
           </div>
 
           {/* Selected Files List */}
           {filesToImport.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              <p className="text-xs font-semibold text-theme-muted uppercase tracking-wider">
                 File Siap Diimport ({filesToImport.length})
               </p>
               <div className="max-h-40 overflow-y-auto space-y-1.5 pr-1 custom-scrollbar">
                 {filesToImport.map((file, i) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-xs"
+                    className="flex items-center justify-between p-2.5 bg-theme-subtle rounded-lg border border-theme-border text-xs"
                   >
                     <div className="flex items-center gap-2 truncate">
-                      <FileText className="w-4 h-4 text-indigo-400 shrink-0" />
-                      <span className="font-medium text-slate-200 truncate">{file.name}</span>
-                      <span className="text-[10px] text-slate-500">({Math.round(file.size / 1024)} KB)</span>
+                      <FileText className="w-4 h-4 text-indigo-500 shrink-0" />
+                      <span className="font-medium text-theme-text truncate">{file.name}</span>
+                      <span className="text-[10px] text-theme-muted">({Math.round(file.size / 1024)} KB)</span>
                     </div>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         removeFile(i);
                       }}
-                      className="p-1 text-slate-500 hover:text-rose-400"
+                      className="p-1 text-theme-muted hover:text-rose-500"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -172,17 +172,17 @@ export function ImportModal({ isOpen, onClose, onImportSuccess }) {
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-slate-950 border-t border-slate-800 flex items-center justify-end gap-2">
+        <div className="p-4 bg-theme-subtle border-t border-theme-border flex items-center justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl transition"
+            className="px-4 py-2 bg-theme-card hover:bg-theme-surface text-theme-muted hover:text-theme-text border border-theme-border text-xs font-medium rounded-xl transition"
           >
             Batal
           </button>
           <button
             disabled={filesToImport.length === 0 || isImporting}
             onClick={handleExecuteImport}
-            className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold rounded-xl shadow transition flex items-center gap-2"
+            className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold rounded-xl shadow transition flex items-center gap-2 active:scale-95"
           >
             {isImporting ? (
               <span>Mengimport...</span>
