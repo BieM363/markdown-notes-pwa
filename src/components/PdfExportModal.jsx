@@ -23,13 +23,9 @@ export function PdfExportModal({ isOpen, onClose, note }) {
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const printRef = useRef(null);
 
-  if (!isOpen || !note) return null;
-
-  const { words, minutes } = getReadingTime(note.content || '');
-
-  // Extract headings for Book Table of Contents
+  // Extract headings for Book Table of Contents (always called unconditionally to satisfy Rules of Hooks)
   const headings = useMemo(() => {
-    if (!note.content) return [];
+    if (!note || !note.content) return [];
     const lines = note.content.split('\n').filter(line => line.match(/^#{1,3}\s+/));
     return lines.map((line) => {
       const match = line.match(/^(#{1,3})\s+(.+)$/);
@@ -38,7 +34,11 @@ export function PdfExportModal({ isOpen, onClose, note }) {
       const text = match[2].replace(/[*_~`]/g, '').trim();
       return { level, text };
     }).filter(Boolean);
-  }, [note.content]);
+  }, [note?.content]);
+
+  if (!isOpen || !note) return null;
+
+  const { words, minutes } = getReadingTime(note.content || '');
 
   // Direct 1-Click PDF Download via html2pdf.js
   const handleDownloadPdf = async () => {

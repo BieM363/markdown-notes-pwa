@@ -445,11 +445,13 @@ export function App() {
         setFontFamily={setFontFamily}
       />
 
-      <PdfExportModal
-        isOpen={isPdfExportOpen}
-        onClose={() => setIsPdfExportOpen(false)}
-        note={activeNote}
-      />
+      {isPdfExportOpen && (
+        <PdfExportModal
+          isOpen={isPdfExportOpen}
+          onClose={() => setIsPdfExportOpen(false)}
+          note={activeNote}
+        />
+      )}
     </div>
   );
 }
