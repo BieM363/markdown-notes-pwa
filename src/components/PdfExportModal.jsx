@@ -49,19 +49,23 @@ export function PdfExportModal({ isOpen, onClose, note }) {
       const safeTitle = (note.title || 'Catatan').replace(/\.md$/, '').replace(/[^\w\s-]/g, '').trim();
 
       const opt = {
-        margin: [12, 12, 14, 12],
+        margin: [8, 8, 10, 8],
         filename: `${safeTitle || 'Catatan'}_Edisi_Buku.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
           scale: 2, 
           useCORS: true, 
-          letterRendering: true, 
+          letterRendering: false, 
           logging: false,
           scrollY: 0,
-          scrollX: 0
+          scrollX: 0,
+          windowWidth: 800
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        pagebreak: { 
+          mode: ['avoid-all', 'css', 'legacy'],
+          avoid: ['.book-break-avoid', 'h1', 'h2', 'h3', 'table', 'blockquote', '.book-ordered-list > li']
+        }
       };
 
       await html2pdf().set(opt).from(element).save();
@@ -282,7 +286,7 @@ export function PdfExportModal({ isOpen, onClose, note }) {
           {/* Printable Book Sheet (A4 Proportion Canvas) */}
           <div 
             ref={printRef}
-            className={`book-print-container w-full max-w-[760px] bg-white text-stone-900 p-6 sm:p-8 md:p-10 shadow-2xl rounded-sm border border-stone-200 ${
+            className={`book-print-container w-full max-w-[760px] bg-white text-stone-900 p-6 sm:p-8 shadow-2xl rounded-sm border border-stone-200 ${
               bookFont === 'serif' ? 'font-serif' : 'font-sans'
             }`}
             style={{ minHeight: '842px' }}
@@ -290,34 +294,24 @@ export function PdfExportModal({ isOpen, onClose, note }) {
             {/* BOOK COVER / HEADER BANNER */}
             <header className="border-b-2 border-stone-800 pb-5 mb-6 book-break-avoid">
               <div className="flex items-center justify-between pb-3 mb-3 border-b border-stone-200">
-                {/* Brand Logo & Publication Info */}
+                {/* Brand Logo, Name & Edition Tag */}
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-500 flex items-center justify-center text-white font-black text-xs shadow tracking-tight">
-                    PN
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center text-white shadow">
+                    <FileText className="w-4 h-4" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
                       <h4 className="font-sans font-black text-sm tracking-tight text-stone-900 uppercase">
                         ProjectNotes <span className="text-indigo-600">PWA</span>
                       </h4>
-                      <span className="bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border border-indigo-200">
+                      <span className="bg-indigo-50 text-indigo-700 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full border border-indigo-200">
                         Edisi Dokumen Buku
                       </span>
                     </div>
                     <p className="font-sans text-[10px] text-stone-500 font-semibold tracking-wide">
-                      Dokumentasi & Catatan Proyek
+                      Dokumentasi & Catatan oleh <strong className="text-indigo-700">BieM363</strong>
                     </p>
                   </div>
-                </div>
-
-                {/* Right: Author Attribution */}
-                <div className="text-right font-sans">
-                  <span className="text-[10px] text-stone-400 font-medium block">
-                    Penulis / Pengembang
-                  </span>
-                  <span className="text-xs font-bold text-indigo-700 tracking-wide">
-                    BieM363
-                  </span>
                 </div>
               </div>
 
