@@ -311,6 +311,13 @@ html.sepia .hljs {
     break-inside: avoid;
   }
 
+  .book-print-container h1,
+  .book-print-container h2,
+  .book-print-container h3 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
   .book-page-break {
     page-break-before: always;
     break-before: page;

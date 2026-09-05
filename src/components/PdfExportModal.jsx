@@ -63,8 +63,7 @@ export function PdfExportModal({ isOpen, onClose, note }) {
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { 
-          mode: ['avoid-all', 'css', 'legacy'],
-          avoid: ['.book-break-avoid', 'h1', 'h2', 'h3', 'table', 'blockquote', '.book-ordered-list > li']
+          mode: ['css', 'legacy']
         }
       };
 
@@ -92,27 +91,27 @@ export function PdfExportModal({ isOpen, onClose, note }) {
   // Custom markdown renderer for clean book aesthetic
   const markdownComponents = {
     h1: ({ children, ...props }) => (
-      <h1 className="text-2xl font-bold border-b border-stone-300 pb-2 mt-6 mb-3 text-stone-900 book-break-avoid" {...props}>
+      <h1 className="text-2xl font-bold border-b border-stone-300 pb-2 mt-5 mb-2.5 text-stone-900" style={{ pageBreakAfter: 'avoid', breakAfter: 'avoid' }} {...props}>
         {children}
       </h1>
     ),
     h2: ({ children, ...props }) => (
-      <h2 className="text-xl font-bold border-b border-stone-200 pb-1.5 mt-5 mb-2.5 text-stone-800 book-break-avoid" {...props}>
+      <h2 className="text-xl font-bold border-b border-stone-200 pb-1.5 mt-4 mb-2 text-stone-800" style={{ pageBreakAfter: 'avoid', breakAfter: 'avoid' }} {...props}>
         {children}
       </h2>
     ),
     h3: ({ children, ...props }) => (
-      <h3 className="text-lg font-semibold mt-4 mb-2 text-stone-800 book-break-avoid" {...props}>
+      <h3 className="text-lg font-semibold mt-3.5 mb-1.5 text-stone-800" style={{ pageBreakAfter: 'avoid', breakAfter: 'avoid' }} {...props}>
         {children}
       </h3>
     ),
     p: ({ children, ...props }) => (
-      <p className="my-2.5 leading-relaxed text-stone-800 text-[13.5px] text-left" {...props}>
+      <p className="my-2 leading-relaxed text-stone-800 text-[13.5px] text-left" {...props}>
         {children}
       </p>
     ),
     blockquote: ({ children, ...props }) => (
-      <blockquote className="my-3 pl-4 py-2 border-l-4 border-indigo-600 bg-stone-100 text-stone-700 italic rounded-r-md text-[13px] book-break-avoid" {...props}>
+      <blockquote className="my-2.5 pl-4 py-1.5 border-l-4 border-indigo-600 bg-stone-100 text-stone-700 italic rounded-r-md text-[13px]" {...props}>
         {children}
       </blockquote>
     ),
@@ -413,7 +412,7 @@ export function PdfExportModal({ isOpen, onClose, note }) {
             {/* TABLE OF CONTENTS (Daftar Isi Buku) */}
             {includeToc && headings.length > 0 && (
               <section 
-                className="my-6 p-5 bg-stone-50 border border-stone-200 rounded-xl book-break-avoid"
+                className="my-4 p-4 bg-stone-50 border border-stone-200 rounded-xl"
                 style={{ overflow: 'visible' }}
               >
                 <div className="font-sans font-bold text-xs uppercase tracking-wider text-stone-700 mb-3 pb-2 border-b border-stone-200 flex items-center gap-2">
@@ -454,7 +453,7 @@ export function PdfExportModal({ isOpen, onClose, note }) {
             </main>
 
             {/* BOOK RUNNING FOOTER */}
-            <footer className="mt-12 pt-4 border-t border-stone-300 flex items-center justify-between text-[10px] font-sans text-stone-500 book-break-avoid">
+            <footer className="mt-8 pt-3 border-t border-stone-300 flex items-center justify-between text-[10px] font-sans text-stone-500">
               <div className="flex items-center gap-1 font-medium">
                 <span>ProjectNotes PWA</span>
                 <span>•</span>
