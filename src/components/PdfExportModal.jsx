@@ -304,9 +304,22 @@ export function PdfExportModal({ isOpen, onClose, note }) {
                       <h4 className="font-sans font-black text-sm tracking-tight text-stone-900 uppercase">
                         ProjectNotes <span className="text-indigo-600">PWA</span>
                       </h4>
-                      <span className="pdf-pill-badge">
-                        <span>Edisi Dokumen Buku</span>
-                      </span>
+                      <svg width="136" height="22" viewBox="0 0 136 22" className="inline-block shrink-0">
+                        <rect x="0.5" y="0.5" width="135" height="21" rx="10.5" fill="#EEF2FF" stroke="#C7D2FE" strokeWidth="1"/>
+                        <text 
+                          x="50%" 
+                          y="50%" 
+                          textAnchor="middle" 
+                          dominantBaseline="central" 
+                          fill="#4338CA" 
+                          fontSize="9.5" 
+                          fontWeight="700" 
+                          fontFamily="Inter, ui-sans-serif, system-ui, -apple-system, sans-serif" 
+                          letterSpacing="0.4"
+                        >
+                          EDISI DOKUMEN BUKU
+                        </text>
+                      </svg>
                     </div>
                     <p className="font-sans text-[10px] text-stone-500 font-semibold tracking-wide">
                       Dokumentasi & Catatan oleh <strong className="text-indigo-700">BieM363</strong>
@@ -324,18 +337,45 @@ export function PdfExportModal({ isOpen, onClose, note }) {
               <div className="pt-2 font-sans space-y-2 border-t border-stone-100">
                 {/* Reading Stats & Date */}
                 <div className="flex flex-wrap items-center gap-2 text-xs text-stone-600">
-                  <span className="pdf-meta-pill">
-                    <FileText className="w-3.5 h-3.5 text-indigo-600" />
-                    <span>{words} kata</span>
-                  </span>
-                  <span className="pdf-meta-pill">
-                    <Clock className="w-3.5 h-3.5 text-amber-600" />
-                    <span>~{minutes} menit baca</span>
-                  </span>
-                  <span className="pdf-meta-pill">
-                    <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>{formattedDate}</span>
-                  </span>
+                  <svg width="90" height="26" viewBox="0 0 90 26" className="inline-block shrink-0">
+                    <rect x="0.5" y="0.5" width="89" height="25" rx="6" fill="#F5F5F4" stroke="#E7E5E4" strokeWidth="1"/>
+                    <g transform="translate(8, 6)">
+                      <path d="M2 1h5l3 3v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z" fill="none" stroke="#4F46E5" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                      <polyline points="7 1 7 4 10 4" fill="none" stroke="#4F46E5" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                    </g>
+                    <text x="53" y="14" textAnchor="middle" dominantBaseline="central" fill="#44403C" fontSize="11" fontWeight="500" fontFamily="Inter, ui-sans-serif, system-ui, -apple-system, sans-serif">
+                      {words} kata
+                    </text>
+                  </svg>
+
+                  <svg width="118" height="26" viewBox="0 0 118 26" className="inline-block shrink-0">
+                    <rect x="0.5" y="0.5" width="117" height="25" rx="6" fill="#F5F5F4" stroke="#E7E5E4" strokeWidth="1"/>
+                    <g transform="translate(8, 6)">
+                      <circle cx="7" cy="7" r="5.5" fill="none" stroke="#D97706" strokeWidth="1.4"/>
+                      <polyline points="7 4.5 7 7 9 8" fill="none" stroke="#D97706" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                    </g>
+                    <text x="65" y="14" textAnchor="middle" dominantBaseline="central" fill="#44403C" fontSize="11" fontWeight="500" fontFamily="Inter, ui-sans-serif, system-ui, -apple-system, sans-serif">
+                      ~{minutes} menit baca
+                    </text>
+                  </svg>
+
+                  {(() => {
+                    const dateW = Math.max(136, (formattedDate || '').length * 7.5 + 30);
+                    return (
+                      <svg width={dateW} height="26" viewBox={`0 0 ${dateW} 26`} className="inline-block shrink-0">
+                        <rect x="0.5" y="0.5" width={dateW - 1} height="25" rx="6" fill="#F5F5F4" stroke="#E7E5E4" strokeWidth="1"/>
+                        <g transform="translate(8, 6)">
+                          <rect x="1" y="2" width="11" height="10" rx="1.5" fill="none" stroke="#059669" strokeWidth="1.4"/>
+                          <line x1="1" y1="5.5" x2="12" y2="5.5" stroke="#059669" strokeWidth="1.2"/>
+                          <line x1="4" y1="0.5" x2="4" y2="2" stroke="#059669" strokeWidth="1.4" strokeLinecap="round"/>
+                          <line x1="9" y1="0.5" x2="9" y2="2" stroke="#059669" strokeWidth="1.4" strokeLinecap="round"/>
+                        </g>
+                        <text x={(dateW + 16) / 2} y="14" textAnchor="middle" dominantBaseline="central" fill="#44403C" fontSize="11" fontWeight="500" fontFamily="Inter, ui-sans-serif, system-ui, -apple-system, sans-serif">
+                          {formattedDate}
+                        </text>
+                      </svg>
+                    );
+                  })()}
                 </div>
 
                 {/* Tags placed cleanly beneath metadata */}
@@ -345,11 +385,26 @@ export function PdfExportModal({ isOpen, onClose, note }) {
                       <Tag className="w-3 h-3 text-indigo-500" />
                       Tag:
                     </span>
-                    {note.tags.map((tag, idx) => (
-                      <span key={idx} className="pdf-tag-pill">
-                        <span>#{tag}</span>
-                      </span>
-                    ))}
+                    {note.tags.map((tag, idx) => {
+                      const tagW = Math.max(54, tag.length * 8 + 18);
+                      return (
+                        <svg key={idx} width={tagW} height="22" viewBox={`0 0 ${tagW} 22`} className="inline-block shrink-0">
+                          <rect x="0.5" y="0.5" width={tagW - 1} height="21" rx="5" fill="#EEF2FF" stroke="#C7D2FE" strokeWidth="1"/>
+                          <text 
+                            x="50%" 
+                            y="50%" 
+                            textAnchor="middle" 
+                            dominantBaseline="central" 
+                            fill="#4338CA" 
+                            fontSize="10.5" 
+                            fontWeight="600" 
+                            fontFamily="Inter, ui-sans-serif, system-ui, -apple-system, sans-serif"
+                          >
+                            #{tag}
+                          </text>
+                        </svg>
+                      );
+                    })}
                   </div>
                 )}
               </div>
