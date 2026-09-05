@@ -304,8 +304,8 @@ export function PdfExportModal({ isOpen, onClose, note }) {
                       <h4 className="font-sans font-black text-sm tracking-tight text-stone-900 uppercase">
                         ProjectNotes <span className="text-indigo-600">PWA</span>
                       </h4>
-                      <span className="bg-indigo-50 text-indigo-700 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full border border-indigo-200">
-                        Edisi Dokumen Buku
+                      <span className="pdf-pill-badge">
+                        <span>Edisi Dokumen Buku</span>
                       </span>
                     </div>
                     <p className="font-sans text-[10px] text-stone-500 font-semibold tracking-wide">
@@ -324,17 +324,17 @@ export function PdfExportModal({ isOpen, onClose, note }) {
               <div className="pt-2 font-sans space-y-2 border-t border-stone-100">
                 {/* Reading Stats & Date */}
                 <div className="flex flex-wrap items-center gap-2 text-xs text-stone-600">
-                  <span className="inline-flex items-center gap-1.5 font-medium bg-stone-100 px-2.5 py-1 rounded-md border border-stone-200/80">
+                  <span className="pdf-meta-pill">
                     <FileText className="w-3.5 h-3.5 text-indigo-600" />
-                    {words} kata
+                    <span>{words} kata</span>
                   </span>
-                  <span className="inline-flex items-center gap-1.5 font-medium bg-stone-100 px-2.5 py-1 rounded-md border border-stone-200/80">
+                  <span className="pdf-meta-pill">
                     <Clock className="w-3.5 h-3.5 text-amber-600" />
-                    ~{minutes} menit baca
+                    <span>~{minutes} menit baca</span>
                   </span>
-                  <span className="inline-flex items-center gap-1.5 font-medium bg-stone-100 px-2.5 py-1 rounded-md border border-stone-200/80">
+                  <span className="pdf-meta-pill">
                     <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-                    {formattedDate}
+                    <span>{formattedDate}</span>
                   </span>
                 </div>
 
@@ -346,11 +346,8 @@ export function PdfExportModal({ isOpen, onClose, note }) {
                       Tag:
                     </span>
                     {note.tags.map((tag, idx) => (
-                      <span
-                        key={idx}
-                        className="px-2 py-0.5 rounded text-[11px] font-medium bg-indigo-50/80 text-indigo-700 border border-indigo-200/70"
-                      >
-                        #{tag}
+                      <span key={idx} className="pdf-tag-pill">
+                        <span>#{tag}</span>
                       </span>
                     ))}
                   </div>
