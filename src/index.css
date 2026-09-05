@@ -322,3 +322,53 @@ html.sepia .hljs {
     print-color-adjust: exact !important;
   }
 }
+
+/* Book PDF Custom Ordered & Unordered List (fixes html2canvas / print marker superscript bug) */
+.book-ordered-list {
+  list-style: none !important;
+  padding-left: 0 !important;
+  counter-reset: book-item-counter;
+}
+
+.book-ordered-list > li {
+  counter-increment: book-item-counter;
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 0.5rem !important;
+  margin-bottom: 0.45rem !important;
+  padding-left: 0 !important;
+}
+
+.book-ordered-list > li::before {
+  content: counter(book-item-counter) ".";
+  font-weight: 700 !important;
+  font-family: inherit !important;
+  color: #4338ca !important;
+  min-width: 1.25rem !important;
+  flex-shrink: 0 !important;
+  text-align: right !important;
+  line-height: inherit !important;
+}
+
+.book-unordered-list {
+  list-style: none !important;
+  padding-left: 0 !important;
+}
+
+.book-unordered-list > li {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 0.5rem !important;
+  margin-bottom: 0.45rem !important;
+  padding-left: 0 !important;
+}
+
+.book-unordered-list > li::before {
+  content: "•";
+  font-weight: 900 !important;
+  color: #4338ca !important;
+  min-width: 1.25rem !important;
+  flex-shrink: 0 !important;
+  text-align: right !important;
+  line-height: inherit !important;
+}

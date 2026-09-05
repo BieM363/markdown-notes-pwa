@@ -4,7 +4,7 @@ import remarkGfm from 'remark-gfm';
 import html2pdf from 'html2pdf.js';
 import { 
   X, Download, Printer, BookOpen, FileText, Clock, 
-  Calendar, Check, Code, Sparkles, Layout, CheckSquare
+  Calendar, Check, Code, Sparkles, Layout, CheckSquare, Tag
 } from 'lucide-react';
 import { getReadingTime } from '../db/db';
 
@@ -113,18 +113,18 @@ export function PdfExportModal({ isOpen, onClose, note }) {
       </blockquote>
     ),
     ul: ({ children, ...props }) => (
-      <ul className="list-disc pl-6 my-2.5 space-y-1.5 text-stone-800 text-[13.5px] leading-relaxed text-left" {...props}>
+      <ul className="book-unordered-list my-2.5 space-y-1.5 text-stone-800 text-[13px] leading-relaxed text-left" {...props}>
         {children}
       </ul>
     ),
     ol: ({ children, ...props }) => (
-      <ol className="list-decimal pl-6 my-2.5 space-y-1.5 text-stone-800 text-[13.5px] leading-relaxed text-left" {...props}>
+      <ol className="book-ordered-list my-2.5 space-y-1.5 text-stone-800 text-[13px] leading-relaxed text-left" {...props}>
         {children}
       </ol>
     ),
     li: ({ children, ...props }) => (
-      <li className="leading-relaxed pl-1 text-left" {...props}>
-        {children}
+      <li className="leading-relaxed text-left" {...props}>
+        <div className="flex-1">{children}</div>
       </li>
     ),
     code: ({ node, inline, className, children, ...props }) => {
@@ -143,7 +143,7 @@ export function PdfExportModal({ isOpen, onClose, note }) {
         );
       }
       return (
-        <code className="bg-stone-100 text-indigo-900 font-semibold px-1.5 py-0.5 rounded text-[12px] font-mono border border-stone-200 inline" {...props}>
+        <code className="bg-stone-100 text-indigo-900 font-semibold px-1.5 py-0.5 rounded text-[11.5px] font-mono border border-stone-200 inline-block align-baseline my-0.5" {...props}>
           {children}
         </code>
       );
@@ -290,24 +290,34 @@ export function PdfExportModal({ isOpen, onClose, note }) {
             {/* BOOK COVER / HEADER BANNER */}
             <header className="border-b-2 border-stone-800 pb-5 mb-6 book-break-avoid">
               <div className="flex items-center justify-between pb-3 mb-3 border-b border-stone-200">
-                {/* Brand Logo, Name & Edition Tag unified */}
+                {/* Brand Logo & Publication Info */}
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center text-white shadow">
-                    <FileText className="w-4 h-4" />
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-500 flex items-center justify-center text-white font-black text-xs shadow tracking-tight">
+                    PN
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
                       <h4 className="font-sans font-black text-sm tracking-tight text-stone-900 uppercase">
                         ProjectNotes <span className="text-indigo-600">PWA</span>
                       </h4>
-                      <span className="bg-indigo-50 text-indigo-700 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full border border-indigo-200">
+                      <span className="bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border border-indigo-200">
                         Edisi Dokumen Buku
                       </span>
                     </div>
                     <p className="font-sans text-[10px] text-stone-500 font-semibold tracking-wide">
-                      Dokumentasi & Catatan oleh <strong className="text-indigo-700">BieM363</strong>
+                      Dokumentasi & Catatan Proyek
                     </p>
                   </div>
+                </div>
+
+                {/* Right: Author Attribution */}
+                <div className="text-right font-sans">
+                  <span className="text-[10px] text-stone-400 font-medium block">
+                    Penulis / Pengembang
+                  </span>
+                  <span className="text-xs font-bold text-indigo-700 tracking-wide">
+                    BieM363
+                  </span>
                 </div>
               </div>
 
@@ -337,11 +347,14 @@ export function PdfExportModal({ isOpen, onClose, note }) {
                 {/* Tags placed cleanly beneath metadata */}
                 {note.tags && note.tags.length > 0 && (
                   <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                    <span className="text-[11px] font-semibold text-stone-400 mr-1">Tag:</span>
+                    <span className="text-[11px] font-semibold text-stone-400 mr-1 flex items-center gap-1">
+                      <Tag className="w-3 h-3 text-indigo-500" />
+                      Tag:
+                    </span>
                     {note.tags.map((tag, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-0.5 rounded text-[11px] font-medium bg-stone-100 text-stone-700 border border-stone-200"
+                        className="px-2 py-0.5 rounded text-[11px] font-medium bg-indigo-50/80 text-indigo-700 border border-indigo-200/70"
                       >
                         #{tag}
                       </span>
